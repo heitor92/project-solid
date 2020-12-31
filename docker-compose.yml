@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+    site:
+        volumes: 
+            - ./code:/var/www/html
+            - ${HOME}/.composer:${HOME}/.composer
+        build: 
+            context: ./containers/web
+            args: 
+                - USER_HOME=${HOME}
+        ports:
+            - "80:80"
+            - "443:443"
+        tty: true
+        hostname: projeto-solid
+        container_name: projeto-solid
+        networks:
+            solidnet:
+                ipv4_address: 172.31.0.2
+        depends_on:
+            - db
+    db:
+        build: ./containers/db
+        ports: 
+            - "3306:3306"
+        hostname: db-solid
+        container_name: db-solid
+        networks:
+            solidnet:
+                ipv4_address: 172.31.0.3
+networks:
+    solidnet:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.31.0.0/16
